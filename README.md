@@ -21,6 +21,15 @@ awake, and lets go only when you type the right key combination.
 - Optional: stop USB devices that are plugged in while locked.
 - Lives in the tray. Lock with a hotkey, after idle time, or at startup.
 
+## Download
+
+Get `Lockdown.exe` from the [latest release](https://github.com/Loseless02/Lockdown/releases/latest)
+and run it. No installer, nothing else needed.
+
+The exe is not code-signed, so Windows SmartScreen may warn on first run:
+choose "More info", then "Run anyway". It also asks for administrator rights;
+the reason is under Build below.
+
 ## Build
 
 Needs nothing but Windows. The compiler ships with .NET Framework.
