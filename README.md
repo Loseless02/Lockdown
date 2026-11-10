@@ -15,9 +15,11 @@ awake, and lets go only when you type the right key combination.
   Ctrl+Alt+Del screen while locked. Everything is put back on unlock.
 - Unlocks on a key combination: a sequence of key presses where held modifiers
   count, so `K`, `Shift+K` and `Ctrl+Alt+K` are three different steps.
-  No lockout, no limit on tries. Esc clears what you typed.
+  No lockout, no limit on tries. A wrong attempt shows nothing at all, so a
+  stranger cannot tell whether the keyboard is even being read. To unlock:
+  Esc to clear, type the combination, Enter.
 - Optional USB key: a normal USB stick that unlocks when plugged in, and can
-  lock the PC when pulled out.
+  lock the PC when pulled out. See below.
 - Optional: stop USB devices that are plugged in while locked.
 - Lives in the tray. Lock with a hotkey, after idle time, or at startup.
 
@@ -29,6 +31,26 @@ and run it. No installer, nothing else needed.
 The exe is not code-signed, so Windows SmartScreen may warn on first run:
 choose "More info", then "Run anyway". It also asks for administrator rights;
 the reason is under Build below.
+
+## USB key
+
+Any ordinary USB stick can act as a key.
+
+1. Plug the stick in and open the settings window.
+2. Under "USB key", pick its drive and press "Make this drive my key".
+   This writes one small hidden file, `lockdown.key`. Nothing else on the
+   stick is touched.
+3. Choose what it does:
+   - "Unlock when the USB key is plugged in"
+   - "Lock when the USB key is pulled out". With both on, the PC is usable
+     only while the stick is in.
+
+The combination keeps working, so a lost stick does not lock you out. Lockdown
+checks the file together with the stick's volume serial number, so copying the
+file to another stick is not enough. "Forget key" unregisters it.
+
+USB unlock is switched off while "Block newly plugged USB devices" is on,
+since a blocked stick can never be read.
 
 ## Build
 

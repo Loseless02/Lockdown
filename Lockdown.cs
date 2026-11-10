@@ -740,7 +740,6 @@ sealed class Locker
     readonly List<int> typed = new List<int>();
     readonly System.Windows.Forms.Timer fadeTimer = new System.Windows.Forms.Timer();
     readonly System.Windows.Forms.Timer guardTimer = new System.Windows.Forms.Timer();
-    readonly System.Windows.Forms.Timer flashTimer = new System.Windows.Forms.Timer();
     readonly System.Windows.Forms.Timer timeoutTimer = new System.Windows.Forms.Timer();
     readonly System.Windows.Forms.Timer noticeTimer = new System.Windows.Forms.Timer();
     readonly KeyHook keyHook;
@@ -749,7 +748,6 @@ sealed class Locker
     readonly IntPtr mouseHook;
     readonly SynchronizationContext ui;
     Overlay main;
-    Color color = Color.Black;
     double opacity;
     bool unlocking;
     volatile int heartbeat;
@@ -781,9 +779,6 @@ sealed class Locker
         guardTimer.Tick += delegate { Guard(); };
         guardTimer.Start();
 
-        flashTimer.Interval = 400;
-        flashTimer.Tick += delegate { flashTimer.Stop(); SetColor(Color.Black); };
-
         noticeTimer.Interval = 1200;
         noticeTimer.Tick += delegate { noticeTimer.Stop(); main.Notice = null; };
 
@@ -813,7 +808,6 @@ sealed class Locker
         {
             string hint = screen.Primary && Settings.ShowHint ? "enter the right combination" : null;
             Overlay overlay = new Overlay(screen, hint, !Settings.BlockMouseButtons, opacity);
-            overlay.BackColor = color;
             overlay.Fallback = keyHook;
             overlays.Add(overlay);
             bounds.Add(screen.Bounds);
@@ -864,19 +858,10 @@ sealed class Locker
         ThreadPool.QueueUserWorkItem(delegate
         {
             bool ok = Secret.Check(attempt);
-            ui.Post(delegate
-            {
-                if (unlocking) return;
-                if (ok) Unlock();
-                else { SetColor(Color.FromArgb(110, 0, 0)); flashTimer.Stop(); flashTimer.Start(); }
-            }, null);
+            // A wrong attempt shows nothing at all: no flash, no message. A
+            // stranger cannot even tell whether the keyboard is being read.
+            if (ok) ui.Post(delegate { Unlock(); }, null);
         });
-    }
-
-    void SetColor(Color value)
-    {
-        color = value;
-        foreach (Overlay overlay in overlays) overlay.BackColor = value;
     }
 
     void Fade()
@@ -892,7 +877,6 @@ sealed class Locker
         foreach (Overlay overlay in overlays) overlay.Dispose();
         fadeTimer.Dispose();
         guardTimer.Dispose();
-        flashTimer.Dispose();
         timeoutTimer.Dispose();
         noticeTimer.Dispose();
         if (Finished != null) Finished();
@@ -1121,7 +1105,7 @@ sealed class SettingsForm : Form
         SuspendLayout();
         AutoScaleDimensions = new SizeF(6F, 13F);
         AutoScaleMode = AutoScaleMode.Font;
-        Text = "Lockdown settings (v4)";
+        Text = "Lockdown settings (1.0.1)";
         Icon = SystemIcons.Shield;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
