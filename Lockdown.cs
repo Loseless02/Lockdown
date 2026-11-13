@@ -558,7 +558,6 @@ static class Autostart
 
     public static bool Set(bool on)
     {
-        Run("/delete /tn Kilit /f"); // startup task from before the rename, if any
         if (!on) return Run("/delete /tn " + TaskName + " /f") == 0;
 
         string user = SecurityElement.Escape(WindowsIdentity.GetCurrent().Name);
